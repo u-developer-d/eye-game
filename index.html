@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Глазомер</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: radial-gradient(circle at center, #ffffff, #BAE4EA, #75C9D5);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #3E494F;
+  }
+  #character {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: auto;
+  }
+  #character img {
+    max-width: 100%;
+    height: auto;
+    opacity: 0.8;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  @media (max-width: 768px) {
+    #character {
+      top: 10px;
+      right: 10px;
+      width: 80px;
+    }
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle at center, #ffffff, #BAE4EA, #75C9D5);
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  h1 {
+    font-size: 40px;
+    color: #3E494F;
+    margin-bottom: 20px;
+  }
+  h2 {
+    font-size: 30px;
+    color: #3E494F;
+    margin-bottom: 60px;
+  }
+  .question {
+    font-size: 24px;
+    margin: 20px 0;
+    line-height: 1.5;
+  }
+  .image-wrapper img {
+    max-width: 100%;
+    height: auto;
+    margin: 15px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .options button {
+    background: linear-gradient(135deg, #FDCD12, #F45EAC, #2FAFC1);
+    background-size: 400%;
+    animation: gradient-animation 5s infinite;
+    color: white;
+    border: none;
+    padding: 16px 26px;
+    border-radius: 35px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .options button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  @keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .result {
+    font-size: 18px;
+    margin-top: 20px;
+    color: #4CAF50;
+    font-weight: bold;
+  }
+  .level-select button {
+    margin: 10px;
+    background: linear-gradient(135deg, #FFB4DC, #fc92d0, #ed67bf);
+    background-size: 400%;
+    animation: gradient-animation 3s infinite;
+    color: white;
+    border: none;
+    padding: 16px 26px;
+    border-radius: 35px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .level-select button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  #progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .progress-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    transition: background 0.3s ease;
+  }
+  .progress-circle.correct {
+    background-color: transparent;
+    background: radial-gradient(circle at center, #F6A7AA, #F1A4CD, #BFAEBB);
+    box-shadow: 0 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+  .progress-circle.incorrect {
+    background-color: transparent;
+    background: radial-gradient(circle at center, #F6A7AA, #F1A4CD, #BFAEBB);
+    box-shadow: 0 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+  @media (max-width: 768px) {
+    .progress-circle {
+      width: 25px;
+      height: 25px;
+      font-size: 14px;
+    }
+  }
+  @media (max-width: 768px) {
+    .question {
+      font-size: 20px;
+    }
+    .options button {
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+    .level-select button {
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+  }
+  #back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 90px;
+    height: 90px;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.8;
+  }
+  #back-button::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 14px solid #FFA0B8;
+  }
+  #back-button:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  @media (max-width: 768px) {
+    #back-button {
+      width: 80px;
+      height: 80px;
+      top: 15px;
+      left: 15px;
+    }
+    #back-button::before {
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-right: 12px solid #FFA0B8;
+    }
+  }
+  @media (max-width: 480px) {
+    #back-button {
+      width: 75px;
+      height: 75px;
+      top: 10px;
+      left: 10px;
+    }
+    #back-button::before {
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 10px solid #FFA0B8;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" id="back-button"></a>
+    <h1>Глазомер</h1>
+    <div id="character">
+      <img src="blondHappyChildUpgradeLightEye.png" alt="Персонаж" id="character-image">
+    </div>
+    <div id="progress-indicator"></div>
+    <div class="level-select" id="level-select">
+      <h2>Выберите уровень сложности:</h2>
+      <button onclick="startLevel(1)">Начальный</button>
+      <button onclick="startLevel(2)">Средний</button>
+      <button onclick="startLevel(3)">Продвинутый</button>
+    </div>
+    <div class="question" id="question"></div>
+    <div class="image-wrapper" id="image-wrapper"></div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+  </div>
+  <script>
+    const allQuestions = {
+      1: [
+  {
+    q: "Что тяжелее?",
+    images: [
+      "apple.png",
+      "watermelon.png",
+      "paper.png"
+    ],
+    o: ["Яблоко", "Арбуз", "Лист бумаги"],
+    a: 1
+  },
+  {
+    q: "Что длиннее?",
+    images: [
+      "pencil.png",
+      "rubber.png",
+      "pencil_clip.png"
+    ],
+    o: ["Карандаш", "Ластик", "Скрепка"],
+    a: 0
+  },
+  {
+    q: "Что можно измерить в литрах?",
+    images: [
+      "milk.jpg",
+      "potato.png",
+      "road.png"
+    ],
+    o: ["Молоко в пакете", "Мешок картошки", "Длина дороги"],
+    a: 0
+  }
+],
+      2: [
+        {
+          q: "Что ближе к 10 сантиметрам?",
+          images: [
+            "desk.jpg",
+            "sofa.png",
+            "hand.jpg"
+          ],
+          o: ["Высота парты", "Длина дивана", "Ширина ладони"],
+          a: 2
+        },
+        {
+          q: "Что может весить около 1 килограмма?",
+          images: [
+            "sugar.webp",
+            "feather.png",
+            "car.jpg"
+          ],
+          o: ["Пакет сахара", "Перо", "Машина"],
+          a: 0
+        },
+        {
+          q: "Какая температура ближе к той, когда вода замерзает?",
+          images: "thermometers.jpg",
+          o: ["20°C", "0°C", "50°C"],
+          a: 1
+        }
+      ],
+      3: [
+        {
+          q: "Если сложить 30 см и 30 см, сколько получится?",
+          image: "straightedge.jpg",
+          o: ["60 см", "90 см", "1 метр"],
+          a: 0
+        },
+        {
+          q: "Что больше: 500 грамм или 1 килограмм?",
+          images: "scales2.jpg",
+          o: ["500 грамм", "1 кг", "Одинаково"],
+          a: 1
+        },
+        {
+          q: "Если в банке 2 литра молока, а в стакане — 200 мл, сколько стаканов нужно, чтобы наполнить банку?",
+          images: "glass.jpg",
+          o: ["20 стаканов", "5 стаканов", "10 стаканов"],
+          a: 2
+        }
+      ]
+    };
+    let level = 1;
+    let current = 0;
+    let score = 0;
+    function updateCharacter(emotion) {
+      const characterImg = document.getElementById("character-image");
+      if (!characterImg) return;
+      if (emotion === "happy") {
+        characterImg.src = "blondHappyChildUpgradeLightEye.png";
+      } else if (emotion === "sad") {
+        characterImg.src = "blondSadChildUpgradeLightEye.png";
+      }
+      characterImg.onerror = () => {
+        console.error("Не удалось загрузить изображение:", characterImg.src);
+        characterImg.src = "defaultKid.png";
+      };
+    }
+    function createProgressCircles(questionsCount) {
+      const progressIndicator = document.getElementById("progress-indicator");
+      progressIndicator.innerHTML = "";
+      for (let i = 0; i < questionsCount; i++) {
+        const circle = document.createElement("div");
+        circle.className = "progress-circle";
+        circle.innerText = i + 1;
+        progressIndicator.appendChild(circle);
+      }
+    }
+    function updateProgressCircle(index, isCorrect) {
+      const progressIndicator = document.getElementById("progress-indicator");
+      const circle = progressIndicator.children[index];
+      if (isCorrect) {
+        circle.classList.add("correct");
+      } else {
+        circle.classList.add("incorrect");
+      }
+    }
+    async function startLevel(lvl) {
+      level = lvl;
+      current = 0;
+      score = 0;
+      document.getElementById("level-select").style.display = "none";
+      document.getElementById("result").innerText = "";
+      createProgressCircles(allQuestions[level].length);
+      await preloadImages(allQuestions[level]);
+      loadQuestion();
+    }
+    function preloadImages(questions) {
+      return new Promise((resolve) => {
+        const imagesToLoad = [];
+        questions.forEach(q => {
+          if (q.image) imagesToLoad.push(q.image);
+          if (q.images) imagesToLoad.push(...q.images);
+        });
+        const loadedImages = [];
+        const totalImages = imagesToLoad.length;
+        imagesToLoad.forEach(src => {
+          const img = new Image();
+          img.onload = () => {
+            loadedImages.push(src);
+            if (loadedImages.length === totalImages) resolve();
+          };
+          img.onerror = () => {
+            console.error(`Не удалось загрузить изображение: ${src}`);
+            loadedImages.push(src);
+            if (loadedImages.length === totalImages) resolve();
+          };
+          img.src = src;
+        });
+      });
+    }
+    function loadQuestion() {
+      const questions = allQuestions[level];
+      if (current >= questions.length) {
+        document.getElementById("result").innerText = `Вы прошли уровень ${level}. Правильных ответов: ${score} из ${questions.length}.`;
+        document.getElementById("question").innerText = "";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("image-wrapper").innerHTML = "";
+        document.getElementById("level-select").style.display = "block";
+        return;
+      }
+      const q = questions[current];
+      document.getElementById("question").innerText = q.q;
+      const imgWrap = document.getElementById("image-wrapper");
+      imgWrap.innerHTML = "";
+      if (q.image) {
+        const img = document.createElement("img");
+        img.src = q.image;
+        img.alt = "Изображение к вопросу";
+        imgWrap.appendChild(img);
+      } else if (q.images) {
+        q.images.forEach(src => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "Вариант";
+          img.style.maxWidth = "30%";
+          img.style.margin = "5px";
+          imgWrap.appendChild(img);
+        });
+      }
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.o.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => {
+          const isCorrect = idx === q.a;
+          if (isCorrect) {
+            score++;
+            updateCharacter("happy");
+            btn.classList.add("correct");
+            setTimeout(() => btn.classList.remove("correct"), 500);
+          } else {
+            updateCharacter("sad");
+            btn.classList.add("incorrect");
+            setTimeout(() => btn.classList.remove("incorrect"), 500);
+          }
+          updateProgressCircle(current, isCorrect);
+          current++;
+          loadQuestion();
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+    document.getElementById("back-button").addEventListener("click", function(event) {
+  if (!confirm("Вы уверены, что хотите покинуть игру?")) {
+    event.preventDefault();
+  }
+});
+    window.onload = () => {
+      document.getElementById("level-select").style.display = "block";
+      document.getElementById("question").innerText = "";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("image-wrapper").innerHTML = "";
+      document.getElementById("result").innerText = "";
+    };
+  </script>
+</body>
+</html>
