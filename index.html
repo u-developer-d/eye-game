@@ -62,7 +62,7 @@
     line-height: 1.5;
   }
   .image-wrapper img {
-    max-width: 60%;
+    max-width: 30%;
     height: auto;
     margin: 15px 0;
     border-radius: 12px;
@@ -372,7 +372,6 @@
       document.getElementById("level-select").style.display = "none";
       document.getElementById("result").innerText = "";
       createProgressCircles(allQuestions[level].length);
-      await preloadImages(allQuestions[level]);
       loadQuestion();
     }
     function preloadImages(questions) {
@@ -423,7 +422,7 @@
           const img = document.createElement("img");
           img.src = src;
           img.alt = "Вариант";
-          img.style.maxWidth = "30%";
+          img.style.maxWidth = "20%";
           img.style.margin = "5px";
           imgWrap.appendChild(img);
         });
